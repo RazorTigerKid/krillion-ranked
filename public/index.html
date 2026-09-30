@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Krillion Ranked</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- ═══ The ocean (always behind everything) ═══ -->
+  <div id="scene" aria-hidden="true">
+    <div id="world">
+      <div id="sky"></div>
+      <div id="boat"></div>
+      <div id="waves"></div>
+      <div id="deco"></div>
+      <div id="guides"></div>
+      <div id="tags"></div>
+      <div class="krill opp hidden" id="krill-opp"><span class="krill-name" id="krill-opp-name"></span></div>
+      <div class="krill you" id="krill-you"></div>
+      <div id="bubbles"></div>
+    </div>
+    <div id="ruler"><div id="ruler-ticks"></div>
+      <div class="rmark you" id="rmark-you">YOU</div>
+      <div class="rmark opp hidden" id="rmark-opp">OPP</div>
+    </div>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+  </div>
+
+  <!-- ═══ Title / login ═══ -->
+  <section class="screen" id="screen-auth">
+    <div class="title-block">
+      <h1 class="glitch" data-text="KRILLION">KRILLION</h1>
+      <div class="subtitle">RANKED DIVE</div>
+      <div class="tagline">7 prompts · 25 seconds each · rarer answers sink deeper</div>
+    </div>
+    <div class="panel auth">
+      <div class="tabs"><button class="tab active" data-auth="login">LOG IN</button><button class="tab" data-auth="register">SIGN UP</button></div>
+      <form id="auth-form" autocomplete="on">
+        <input name="username" placeholder="diver name" required minlength="3" maxlength="16" autocomplete="username" spellcheck="false">
+        <input name="password" type="password" placeholder="password" required minlength="6" autocomplete="current-password">
+        <button class="descend-btn" type="submit" id="auth-submit">▼ LOG IN ▼</button>
+        <p class="error" id="auth-error"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ═══ Home ═══ -->
+  <section class="screen" id="screen-home">
+    <div class="corner-right"><span class="online" id="online-count"></span><button class="mini" id="logout">SIGN OUT</button></div>
+    <div class="title-block">
+      <h1 class="glitch" data-text="KRILLION">KRILLION</h1>
+      <div class="subtitle">RANKED DIVE</div>
+      <div class="tagline" id="home-tagline">7 prompts · 25 seconds each · rarer answers sink deeper</div>
+    </div>
+    <div class="home-lower">
+      <div class="diver-card" id="diver-card">
+        <div class="badge" id="me-badge"></div>
+        <div class="diver-info">
+          <div class="diver-name" id="me-name"></div>
+          <div class="diver-rank" id="me-rank"></div>
+          <div class="bar"><div class="bar-fill" id="me-progress"></div></div>
+          <div class="diver-sub" id="me-next"></div>
+        </div>
+      </div>
+      <button class="descend-btn big" id="btn-ranked">▼ BEGIN RANKED DESCENT ▼</button>
+      <div class="menu-row">
+        <button class="mini" id="btn-practice">PRACTICE vs BOT</button>
+        <button class="mini" data-panel="leaderboard">LEADERBOARD</button>
+        <button class="mini" data-panel="history">MY DIVES</button>
+        <button class="mini" data-panel="ranks">RANKS</button>
+        <button class="mini" data-panel="how">HOW TO PLAY</button>
+      </div>
+      <div class="db-info" id="db-info"></div>
+    </div>
+  </section>
+
+  <!-- ═══ Matchmaking ═══ -->
+  <section class="screen" id="screen-queue">
+    <div class="panel center">
+      <div class="sonar"><i></i><i></i><i></i></div>
+      <div class="label pink">SONAR PING</div>
+      <h2 class="big-pixel">searching the depths for a rival…</h2>
+      <div class="big-pixel dim" id="queue-time">0:00</div>
+      <div class="small dim" id="queue-range"></div>
+      <button class="mini" id="btn-cancel">CANCEL</button>
+    </div>
+  </section>
+
+  <!-- ═══ Match ═══ -->
+  <section class="screen" id="screen-match">
+    <div class="hud">
+      <div class="hud-left">
+        <div class="label pink" id="h-round">PROMPT 1 OF 7</div>
+        <div class="label dim" id="h-mode">RANKED</div>
+      </div>
+      <div class="hud-scores">
+        <div class="hs you"><span class="hs-name" id="h-you-name">YOU</span><span class="hs-depth" id="h-you-depth">0m</span></div>
+        <div class="hs-vs">vs</div>
+        <div class="hs opp"><span class="hs-name" id="h-opp-name">OPP</span><span class="hs-depth" id="h-opp-depth">0m</span><span class="hs-status" id="h-opp-status"></span></div>
+      </div>
+    </div>
+
+    <div class="prompt-card" id="prompt-card">
+      <div class="label pink" id="p-num">PROMPT 1 OF 7</div>
+      <div class="prompt-text" id="p-text"></div>
+      <div class="prompt-sub">▼ rarer answers sink deeper ▼</div>
+    </div>
+
+    <div class="countdown hidden" id="countdown">descending · the clock starts in <b id="countdown-n">3</b></div>
+
+    <!-- Round reveal -->
+    <div class="reveal hidden" id="reveal">
+      <div class="creature" id="r-creature"></div>
+      <div class="r-tier" id="r-tier"></div>
+      <div class="r-answer" id="r-answer"></div>
+      <div class="r-pts" id="r-pts"></div>
+      <div class="r-flavor" id="r-flavor"></div>
+      <div class="r-fact hidden" id="r-fact"></div>
+      <div class="r-opp" id="r-opp"></div>
+      <div class="r-report hidden" id="r-report"></div>
+    </div>
+
+    <button class="descend-btn surface hidden" id="btn-surface">SURFACE ▲</button>
+
+    <div class="banner hidden" id="banner"></div>
+
+    <div class="dive-bar" id="dive-bar">
+      <div class="dive-inner">
+        <div class="timer"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" class="t-bg"/><circle cx="30" cy="30" r="26" class="t-fg" id="t-ring"/></svg><span id="t-num">25</span></div>
+        <form id="guess-form" autocomplete="off">
+          <div class="feedback" id="feedback"></div>
+          <input id="guess-input" maxlength="80" placeholder="type one answer_" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <div class="time-line"><div id="time-fill"></div></div>
+        </form>
+        <button class="dive-btn" id="dive-btn" type="submit" form="guess-form">DIVE</button>
+      </div>
+      <button class="forfeit" id="btn-forfeit">forfeit</button>
+    </div>
+  </section>
+
+  <!-- ═══ Results ═══ -->
+  <section class="screen" id="screen-result">
+    <div class="result-wrap">
+      <div class="result-word" id="res-word"></div>
+      <div class="result-depths" id="res-depths"></div>
+      <div class="result-reason" id="res-reason"></div>
+      <div class="rating-box" id="res-rating-box">
+        <div class="badge big" id="res-badge"></div>
+        <div>
+          <div class="diver-rank" id="res-rank"></div>
+          <div class="rating-line"><span id="res-rating"></span> <span id="res-delta"></span></div>
+        </div>
+      </div>
+      <div class="promo hidden" id="res-promo"></div>
+      <div class="menu-row">
+        <button class="descend-btn" id="res-again">▼ DIVE AGAIN ▼</button>
+        <button class="mini" id="res-home">HOME</button>
+      </div>
+      <div class="catch" id="res-catch"></div>
+    </div>
+  </section>
+
+  <!-- ═══ Logbook panels (leaderboard, history, ranks, how to play) ═══ -->
+  <div class="modal hidden" id="modal">
+    <div class="panel modal-panel">
+      <button class="mini close" id="modal-close">CLOSE ✕</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
