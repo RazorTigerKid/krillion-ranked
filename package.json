@@ -1,0 +1,14 @@
+{
+  "name": "krillion-ranked",
+  "version": "1.0.0",
+  "description": "Rare-answer trivia with live ranked 1v1 matches",
+  "main": "server/index.js",
+  "private": true,
+  "engines": { "node": ">=22.5" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server/index.js",
+    "check-prompts": "node --disable-warning=ExperimentalWarning scripts/check-prompts.js",
+    "reports": "node --disable-warning=ExperimentalWarning scripts/reports.js",
+    "test": "node --disable-warning=ExperimentalWarning test/match.test.js"
+  }
+}
